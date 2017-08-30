@@ -1,0 +1,123 @@
+{
+  "contentType": {
+    "baseSettings": {
+      "items": [
+        {
+          "name": "form.contentType.item.connections",
+          "target": "connection",
+          "type": "select",
+          "value": "",
+          "items": [{}],
+          "validations": {}
+        },
+        {
+          "name": "form.contentType.item.name",
+          "target": "name",
+          "value": "",
+          "type": "string",
+          "validations": {
+            "required": true
+          }
+        },
+        {
+          "name": "form.contentType.item.description",
+          "target": "description",
+          "value": "",
+          "type": "textarea",
+          "placeholder": "form.contentType.item.description.placeholder",
+          "validations": {}
+        }
+      ]
+    },
+    "advancedSettings": {
+      "items": [
+        {
+          "name": "form.contentType.item.collectionName",
+          "target": "collectionName",
+          "type": "string",
+          "value": "",
+          "validations": {},
+          "inputDescription": "form.contentType.item.collectionName.inputDescription"
+        }
+      ]
+    }
+  },
+  "attributesDisplay": {
+    "items": [
+      {
+        "type": "string",
+        "description": "popUpForm.attributes.string.description"
+      },
+      {
+        "type": "text",
+        "description": "popUpForm.attributes.text.description"
+      },
+      {
+        "type": "boolean",
+        "description": "popUpForm.attributes.boolean.description"
+      },
+      {
+        "type": "date",
+        "description": "popUpForm.attributes.date.description"
+      },
+      {
+        "type": "json",
+        "description": "popUpForm.attributes.json.description"
+      },
+      {
+        "type": "media",
+        "description": "popUpForm.attributes.media.description"
+      },
+      {
+        "type": "relation",
+        "description": "popUpForm.attributes.relation.description"
+      }
+    ]
+  },
+  "attribute": {
+    "text": {
+      "baseSettings": {
+        "items": [
+          {
+            "name": "form.attribute.item.textarea.name",
+            "target": "name",
+            "type": "textarea",
+            "value": "",
+            "validations": {}
+          }
+        ]
+      },
+      "advancedSettings": {}
+    },
+    "string": {
+      "baseSettings": {
+        "items": [
+          {
+            "name": "form.attribute.item.string.name",
+            "target": "name",
+            "type": "string",
+            "value": "",
+            "validations": {}
+          }
+        ]
+      },
+      "advancedSettings": {}
+    },
+    "date": {
+      "baseSettings": {},
+      "advancedSettings": {}
+    },
+    "boolean": {
+      "baseSettings": {},
+      "advancedSettings": {}
+    },
+    "json": {
+      "baseSettings": {},
+      "advancedSettings": {}
+    },
+    "media": {
+      "baseSettings": {},
+      "advancedSettings": {}
+    }
+  }
+}

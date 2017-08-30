@@ -1,0 +1,78 @@
+{
+  "contentType.temporaryDisplay": "(Not saved)",
+  "home.contentTypeBuilder.name": "Content Types",
+  "home.contentTypeBuilder.description": "Créez, éditer vos modèles.",
+  "home.emptyContentType.title": "Il n'y a pas de model disponible",
+  "home.emptyContentType.description": "Créez votre premier modèle...",
+
+  "home.emptyAttributes.title": "Il n'y a pas encore de champs",
+  "home.emptyAttributes.description": "Ajoutez votre premier champ a votre modèle",
+
+  "button.contentType.create": "Créer un modèle",
+  "button.contentType.add": "Ajouter un modèle",
+  "button.attributes.add": "Ajouter un champs",
+
+  "form.attribute.item.textarea.name": "Nom",
+  "form.attribute.item.string.name": "Nom",
+
+  "form.contentType.item.connections": "Connexion",
+  "form.contentType.item.name": "Nom",
+  "form.contentType.item.description": "Description",
+  "form.contentType.item.description.placeholder": "Ecrivez votre petite description ici...",
+  "form.contentType.item.collectionName": "Nom de la Collection",
+  "form.contentType.item.collectionName.inputDescription": "Pratique quand le Nom de votre Modèle et de votre table sont différents",
+
+  "menu.section.contentTypeBuilder.name.plural": "Modèles",
+  "menu.section.contentTypeBuilder.name.singular": "Modèle",
+  "menu.section.documentation.name": "Documentation",
+  "menu.section.documentation.guide": "Découvrez plus à propose des modèles dans notre",
+  "menu.section.documentation.guideLink": "guide.",
+  "menu.section.documentation.tutorial": "Découvrez notre",
+  "menu.section.documentation.tutorialLink": "tuto vidéo.",
+
+  "modelPage.contentHeader.emptyDescription.description": "Il n'ya pas de description pour ce modèle",
+  "modelPage.contentType.list.title.plural": "champs",
+  "modelPage.contentType.list.title.singular": "champ",
+  "modelPage.contentType.list.title.including": "dont",
+  "modelPage.contentType.list.relationShipTitle.plural": "relations",
+  "modelPage.contentType.list.relationShipTitle.singular": "relation",
+
+  "modelPage.attribute.relationWith": "Relation avec",
+
+  "notification.error.message": "Une erreur est survenue",
+  "notification.info.contentType.creating.notSaved": "Une creation de Modèle est déjà en cours",
+
+  "popUpForm.attributes.string.description": "Titres, noms, paragraphes, listes de noms",
+  "popUpForm.attributes.text.description": "Descriptions, paragraphes texte, articles ",
+  "popUpForm.attributes.boolean.description": "Oui ou non, 1 ou 0, vrai ou faux",
+  "popUpForm.attributes.date.description": "Date événements, horaires",
+  "popUpForm.attributes.json.description": "Données au format JSON",
+  "popUpForm.attributes.media.description": "Images, vidéos, PDFs et autres fichiers",
+  "popUpForm.attributes.relation.description": "Pointe vers un autre Modèle",
+
+  "popUpForm.attributes.string.name": "Chaîne de caractères",
+  "popUpForm.attributes.text.name": "Text",
+  "popUpForm.attributes.boolean.name": "Boolean",
+  "popUpForm.attributes.date.name": "Date",
+  "popUpForm.attributes.json.name": "JSON",
+  "popUpForm.attributes.media.name": "Media",
+  "popUpForm.attributes.relation.name": "Relation",
+
+  "popUpForm.create.contentType.header.title": "Ajouter un Nouveau Modèle",
+  "popUpForm.choose.attributes.header.title": "Ajouter un Nouveau Champs",
+  "popUpForm.edit.contentType.header.title": "Modifier un Modèle",
+  "popUpForm.navContainer.base": "Réglages de base",
+  "popUpForm.navContainer.advanced": "Réglages avancés",
+
+  "popUpWarning.button.cancel": "Annuler",
+  "popUpWarning.button.confirm": "Confirmer",
+  "popUpWarning.title": "Merci de confirmer",
+  "popUpWarning.bodyMessage.contentType.delete": "Êtes-vous sûre de vouloir supprimer ce modèle?",
+
+  "table.contentType.title.plural": "Modèles sont disponibles",
+  "table.contentType.title.singular": "Modèle est disponible",
+  "table.contentType.head.name": "Nom",
+  "table.contentType.head.description": "Description",
+  "table.contentType.head.fields": "Champs"
+
+}

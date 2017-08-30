@@ -29,11 +29,11 @@ module.exports = {
       const relation = _.find(model.associations, { alias: name });
 
       if (relation) {
-        params = {
-          target: relation.model || relation.collection,
-          key: relation.via,
-          nature: relation.nature
-        };
+        params = _.omit(params, ['collection', 'model', 'via']);
+        params.target = relation.model || relation.collection;
+        params.key = relation.via;
+        params.nature = relation.nature;
+        params.targetColumnName = _.get(strapi.models[params.target].attributes[params.key], 'columnName', '');
       }
 
       attributes.push({
@@ -45,6 +45,7 @@ module.exports = {
     return {
       name: slug,
       description: _.get(model, 'description', 'model.description.missing'),
+      connection: model.connection,
       attributes: attributes
     };
   },
@@ -330,7 +331,7 @@ module.exports = {
     const deleteModelFile = (parentPath, fileName) => {
       const filePath = path.join(parentPath, fileName);
 
-      if (_.startsWith(_.toLower(fileName), model)) {
+      if (_.startsWith(`${_.toLower(fileName)}.`, `${model}.`)) {
         try {
           fs.unlinkSync(filePath);
         } catch (e) {
