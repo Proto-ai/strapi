@@ -8,14 +8,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { bindActionCreators } from 'redux';
-import { get, has, size, replace, startCase } from 'lodash';
+import { get, has, size, replace, startCase, findIndex } from 'lodash';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router';
 import { router } from 'app';
 
 // Global selectors
-import { makeSelectMenu } from 'containers/App/selectors';
-import { makeSelectDidFetchModel } from 'containers/Form/selectors';
+import { makeSelectContentTypeUpdated } from 'containers/Form/selectors';
 
 import AttributeRow from 'components/AttributeRow';
 import ContentHeader from 'components/ContentHeader';
@@ -26,7 +25,14 @@ import PluginLeftMenu from 'components/PluginLeftMenu';
 
 import { storeData } from '../../utils/storeData';
 
-import { modelFetch, modelFetchSucceeded } from './actions';
+import {
+  cancelChanges,
+  deleteAttribute,
+  modelFetch,
+  modelFetchSucceeded,
+  resetShowButtonsProps,
+  submit,
+} from './actions';
 
 import selectModelPage from './selectors';
 import styles from './styles.scss';
@@ -37,6 +43,10 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
   constructor(props) {
     super(props);
 
+    this.state = {
+      contentTypeTemporary: false,
+    }
+
     this.popUpHeaderNavLinks = [
       { name: 'baseSettings', message: 'popUpForm.navContainer.base' },
       { name: 'advancedSettings', message: 'popUpForm.navContainer.advanced' },
@@ -44,17 +54,23 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
   }
 
   componentDidMount() {
-    this.fetchModel();
+    this.fetchModel(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.updatedContentType !== nextProps.updatedContentType) {
+      if (this.state.contentTypeTemporary) {
+        this.props.modelFetchSucceeded({ model: storeData.getContentType() });
+      } else {
+        this.fetchModel(nextProps);
+      }
+    }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.params.modelName !== this.props.params.modelName) {
-      this.fetchModel();
-    }
-
-    // Refecth content type after editing it
-    if (prevProps.location.hash !== this.props.location.hash && this.props.didFetchModel) {
-      this.fetchModel();
+      this.props.resetShowButtonsProps();
+      this.fetchModel(this.props);
     }
   }
 
@@ -84,11 +100,13 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
     </div>
   )
 
-  fetchModel = () => {
-    if (storeData.getIsModelTemporary() && get(storeData.getContentType(), 'name') === this.props.params.modelName) {
+  fetchModel = (props) => {
+    if (storeData.getIsModelTemporary() && get(storeData.getContentType(), 'name') === props.params.modelName) {
+      this.setState({ contentTypeTemporary: true })
       this.props.modelFetchSucceeded({ model: storeData.getContentType() });
     } else {
-      this.props.modelFetch(this.props.params.modelName);
+      this.setState({ contentTypeTemporary: false });
+      this.props.modelFetch(props.params.modelName);
     }
   }
 
@@ -103,6 +121,19 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
   handleClickAddAttribute = () => {
     router.push(`plugins/content-type-builder/models/${this.props.params.modelName}#choose::attributes`);
   }
+
+  handleDelete = (attributeName) => {
+    const index = findIndex(this.props.modelPage.model.attributes, ['name', attributeName]);
+    this.props.deleteAttribute(index, this.props.params.modelName);
+  }
+
+  handleEditAttribute = (attributeName) => {
+    const index = findIndex(this.props.modelPage.model.attributes, ['name', attributeName]);
+    const attribute = this.props.modelPage.model.attributes[index];
+    router.push(`plugins/content-type-builder/models/${this.props.params.modelName}#edit${this.props.params.modelName}::attribute${attribute.params.type}::baseSettings::${index}`);
+
+  }
+
 
   toggleModal = () => {
     const locationHash = this.props.location.hash ? '' : '#create::contentType::baseSettings';
@@ -120,7 +151,7 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
     </li>
   )
 
-  renderCustomLi = (row, key) => <AttributeRow key={key} row={row} />
+  renderCustomLi = (row, key) => <AttributeRow key={key} row={row} handleEdit={this.handleEditAttribute} handleDelete={this.handleDelete} />
 
   renderCustomLink = (props, linkStyles) => {
     if (props.link.name === 'button.contentType.add') return this.renderAddLink(props, linkStyles);
@@ -171,6 +202,9 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
   render() {
     // Url to redirects the user if he modifies the temporary content type name
     const redirectRoute = replace(this.props.route.path, '/:modelName', '');
+    // const addButtons = this.props.modelPage.showButtons;
+    const addButtons  = get(storeData.getContentType(), 'name') === this.props.params.modelName && size(get(storeData.getContentType(), 'attributes')) > 0 || this.props.modelPage.showButtons;
+
     const content = size(this.props.modelPage.model.attributes) === 0 ?
       <EmptyAttributesView handleClick={this.handleClickAddAttribute} /> :
         <List
@@ -180,7 +214,6 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
           renderCustomLi={this.renderCustomLi}
           handleButtonClick={this.handleClickAddAttribute}
         />;
-
     return (
       <div className={styles.modelPage}>
         <div className="container-fluid">
@@ -195,9 +228,13 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
                 <ContentHeader
                   name={this.props.modelPage.model.name}
                   description={this.props.modelPage.model.description}
-                  noI18n
+                  icoType="pencil"
                   editIcon
                   editPath={`${redirectRoute}/${this.props.params.modelName}#edit${this.props.params.modelName}::contentType::baseSettings`}
+                  addButtons={addButtons}
+                  handleSubmit={this.props.submit}
+                  handleCancel={this.props.cancelChanges}
+                  isLoading={this.props.modelPage.showButtonLoader}
                 />
                 {content}
               </div>
@@ -212,6 +249,9 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
           menuData={this.props.menu}
           redirectRoute={redirectRoute}
           modelName={this.props.params.modelName}
+          contentTypeData={this.props.modelPage.model}
+          isModelPage
+          modelLoading={this.props.modelPage.modelLoading}
         />
       </div>
     );
@@ -220,29 +260,36 @@ export class ModelPage extends React.Component { // eslint-disable-line react/pr
 
 const mapStateToProps = createStructuredSelector({
   modelPage: selectModelPage(),
-  menu: makeSelectMenu(),
-  didFetchModel: makeSelectDidFetchModel(),
+  updatedContentType: makeSelectContentTypeUpdated(),
 });
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
+      cancelChanges,
+      deleteAttribute,
       modelFetch,
       modelFetchSucceeded,
+      resetShowButtonsProps,
+      submit,
     },
     dispatch,
   );
 }
 
 ModelPage.propTypes = {
-  didFetchModel: React.PropTypes.bool,
+  cancelChanges: React.PropTypes.func,
+  deleteAttribute: React.PropTypes.func,
   location: React.PropTypes.object,
   menu: React.PropTypes.array,
   modelFetch: React.PropTypes.func,
   modelFetchSucceeded: React.PropTypes.func,
   modelPage: React.PropTypes.object,
   params: React.PropTypes.object,
+  resetShowButtonsProps: React.PropTypes.func,
   route: React.PropTypes.object,
+  submit: React.PropTypes.func,
+  updatedContentType: React.PropTypes.bool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModelPage);

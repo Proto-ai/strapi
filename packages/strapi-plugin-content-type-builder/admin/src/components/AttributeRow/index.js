@@ -7,6 +7,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { capitalize } from 'lodash';
+import PopUpWarning from 'components/PopUpWarning';
 import IcoBoolean from '../../assets/images/icon_boolean.svg';
 import IcoDate from '../../assets/images/icon_date.svg';
 import IcoImage from '../../assets/images/icon_image.svg';
@@ -23,20 +24,36 @@ class AttributeRow extends React.Component { // eslint-disable-line react/prefer
     this.asset = {
       'boolean': IcoBoolean,
       'date': IcoDate,
-      'image': IcoImage,
+      'media': IcoImage,
       'json': IcoJson,
       'relation': IcoRelation,
       'string': IcoString,
       'text': IcoText,
     };
+    this.state = {
+      showWarning: false,
+    };
   }
 
-  edit = () => {
-    console.log('edit');
+  edit = (e) => {
+    e.preventDefault();
+    this.props.handleEdit(this.props.row.name);
   }
 
   delete = () => {
-    console.log('delete');
+    this.props.handleDelete(this.props.row.name);
+    this.setState({ showWarning: false });
+  }
+
+  showModalWarning = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.setState({ showWarning: !this.state.showWarning });
+  }
+  toggleModalWarning = () => {
+    // e.preventDefault();
+    // e.stopPropagation()
+    this.setState({ showWarning: !this.state.showWarning });
   }
 
   renderAttributesBox = () => {
@@ -47,10 +64,10 @@ class AttributeRow extends React.Component { // eslint-disable-line react/prefer
 
   render() {
     const relationType = capitalize(this.props.row.params.type)
-    || <div><FormattedMessage id={'modelPage.attribute.relationWith'} /> <span style={{ fontStyle: 'italic' }}>{capitalize(this.props.row.params.model)}</span></div>;
+    || <div><FormattedMessage id="modelPage.attribute.relationWith" /> <span style={{ fontStyle: 'italic' }}>{capitalize(this.props.row.params.model)}</span></div>;
 
     return (
-      <li className={styles.attributeRow}>
+      <li className={styles.attributeRow} onClick={this.edit}>
         <div className={styles.flex}>
           <div className={styles.nameContainer}>
             {this.renderAttributesBox()}
@@ -63,16 +80,25 @@ class AttributeRow extends React.Component { // eslint-disable-line react/prefer
               <i className="fa fa-pencil ico" onClick={this.edit} role="button" />
             </div>
             <div className="ico">
-              <i className="fa fa-trash ico" onClick={this.delete} role="button" />
+              <i className="fa fa-trash ico" onClick={this.showModalWarning} role="button" />
             </div>
           </div>
         </div>
+        <PopUpWarning
+          isOpen={this.state.showWarning}
+          toggleModal={this.toggleModalWarning}
+          bodyMessage={'popUpWarning.bodyMessage.contentType.delete'}
+          popUpWarningType={'danger'}
+          handleConfirm={this.delete}
+        />
       </li>
     );
   }
 }
 
 AttributeRow.propTypes = {
+  handleDelete: React.PropTypes.func,
+  handleEdit: React.PropTypes.func,
   row: React.PropTypes.object,
 }
 

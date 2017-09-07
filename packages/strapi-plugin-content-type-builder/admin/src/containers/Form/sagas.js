@@ -9,6 +9,8 @@ import {
   connectionsFetchSucceeded,
   contentTypeActionSucceeded,
   contentTypeFetchSucceeded,
+  setButtonLoading,
+  unsetButtonLoading,
 } from './actions';
 
 import {
@@ -33,8 +35,17 @@ export function* editContentType() {
     const initialContentType = yield select(makeSelectInitialDataEdit());
     const requestUrl = `/content-type-builder/models/${initialContentType.name}`;
 
+    yield put(setButtonLoading());
     yield call(request, requestUrl, opts);
+
+    yield new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 5000);
+    });
+
     yield put(contentTypeActionSucceeded());
+    yield put(unsetButtonLoading());
 
   } catch(error) {
     console.log(error);
@@ -50,8 +61,7 @@ export function* fetchConnections() {
     yield put(connectionsFetchSucceeded(data));
 
   } catch(error) {
-    console.log(error);
-    // TODO notification
+    window.Strapi.notification.error('notification.error.message')
   }
 }
 
@@ -65,7 +75,7 @@ export function* fetchContentType(action) {
     yield put(contentTypeFetchSucceeded(data));
 
   } catch(error) {
-    console.log(error);
+    window.Strapi.notification.error('notification.error.message')
   }
 }
 

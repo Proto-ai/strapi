@@ -12,10 +12,16 @@ import { createStructuredSelector } from 'reselect';
 import { map } from 'lodash';
 import { pluginId } from 'app';
 import { define } from 'i18n';
+
+import { makeSelectShouldRefetchContentType } from 'containers/Form/selectors';
+
 import { storeData } from '../../utils/storeData';
 import messages from '../../translations/en.json';
+
+
 import styles from './styles.scss';
 import { modelsFetch } from './actions';
+import { makeSelectMenu } from './selectors';
 
 define(map(messages, (message, id) => ({
   id,
@@ -26,6 +32,12 @@ define(map(messages, (message, id) => ({
 class App extends React.Component {
   componentDidMount() {
     this.props.modelsFetch();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.shouldRefetchContentType !== this.props.shouldRefetchContentType) {
+      this.props.modelsFetch();
+    }
   }
 
 
@@ -39,6 +51,7 @@ class App extends React.Component {
     const content = React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
         exposedComponents: this.props.exposedComponents,
+        menu: this.props.menu,
       })
     );
 
@@ -57,7 +70,9 @@ App.contextTypes = {
 App.propTypes = {
   children: React.PropTypes.node,
   exposedComponents: React.PropTypes.object.isRequired,
+  menu: React.PropTypes.array,
   modelsFetch: React.PropTypes.func,
+  shouldRefetchContentType: React.PropTypes.bool,
 };
 
 export function mapDispatchToProps(dispatch) {
@@ -69,7 +84,10 @@ export function mapDispatchToProps(dispatch) {
   )
 }
 
-const mapStateToProps = createStructuredSelector({});
+const mapStateToProps = createStructuredSelector({
+  menu: makeSelectMenu(),
+  shouldRefetchContentType: makeSelectShouldRefetchContentType(),
+});
 
 // Wrap the component to inject dispatch and state into it
 export default connect(mapStateToProps, mapDispatchToProps)(App);
